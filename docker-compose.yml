@@ -34,7 +34,7 @@ services:
     
   flaskapp:
     container_name: flaskapp
-    build: .
+    image: suvo32/demo
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: admin
