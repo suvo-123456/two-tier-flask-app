@@ -1,0 +1,44 @@
+pipeline{
+    agent any
+    stages{
+        stage('code'){
+            steps{
+                git url: 'https://github.com/suvo-123456/two-tier-flask-app.git' , branch: 'master' 
+            }
+        }
+         stage('build'){
+            steps{
+                sh 'docker build -t demo .'
+            }
+        }
+        stage('push to dockerhub'){
+            steps{
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerHubCreds',
+                    passwordVariable: 'dockerHubPass',
+                    usernameVariable: 'dockerHubUsername'
+                    )]){
+                        
+                    sh 'docker login -u "$dockerHubUsername" -p "$dockerHubPass"'
+                    sh 'docker image tag demo "$dockerHubUsername"/demo:latest'
+                    sh 'docker push "$dockerHubUsername"/demo:latest'
+
+                }
+            }
+        }
+         stage('test'){
+            steps{
+                echo "THIS IS CODE test"
+            }
+        }
+         stage('deploy'){
+            steps{
+               sh 'docker compose up -d'
+            }
+        }
+        
+    }
+}
+
+
+// my first jenkins file 
